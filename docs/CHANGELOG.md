@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.8] - 2025-09-06 - SSE Integration
+
+### Added
+- **NEW: SSE (Server-Sent Events) mode** - Full implementation for n8n MCP Server Trigger integration
+- **NEW: SSE endpoints** - `/sse` for event streams, `/mcp/message` for async requests
+- **NEW: SSE Session Manager** - Manages multiple concurrent SSE connections with lifecycle handling
+- **NEW: MCP protocol over SSE** - Enables real-time event streaming and async tool execution
+- **NEW: Docker Compose SSE configuration** - `docker-compose.sse.yml` for easy deployment
+- **NEW: SSE test scripts** - `npm run test:sse` for verification and debugging
+- **NEW: n8n workflow example** - Example workflow for MCP Server Trigger with SSE
+- **NEW: N8N_COMPATIBILITY_MODE** - Enable strict schema validation for n8n's MCP Client Tool
+- **NEW: Separate tool files** - Clean architecture with separate n8n-compatible tool definitions
+
+### Features
+- **Real-time communication** - SSE enables push-based updates from server to n8n
+- **Long-running operations** - Better support for async and long-running tool executions
+- **Multiple connections** - Support for multiple concurrent n8n workflows
+- **Keep-alive pings** - Automatic connection maintenance every 30 seconds
+- **Session management** - Automatic cleanup of inactive sessions (5-minute timeout)
+- **Backward compatibility** - Legacy `/mcp` endpoint still available
+- **Schema strictness** - All tools have `additionalProperties: false` in compatibility mode
+
+### Documentation
+- Complete SSE implementation guide at `docs/SSE_IMPLEMENTATION.md`
+- Updated README with SSE mode instructions
+- Added SSE testing and deployment documentation
+- n8n configuration examples for MCP Server Trigger
+
 ## [2.10.8] - 2025-09-04
 
 ### Updated
