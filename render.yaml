@@ -1,0 +1,68 @@
+services:
+  - type: web
+    name: n8n-mcp
+    runtime: docker
+    repo: https://github.com/adedara1/mcp-n8n.git
+    plan: starter
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    scaling:
+      minInstances: 1
+      maxInstances: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MCP_MODE
+        value: http
+      - key: USE_FIXED_HTTP
+        value: true
+      - key: LOG_LEVEL
+        value: info
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 3000
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: TRUST_PROXY
+        value: 1
+      - key: REBUILD_ON_START
+        value: false
+      - key: AUTH_TOKEN
+        generateValue: true
+      - key: N8N_API_URL
+        sync: false
+      - key: N8N_API_KEY
+        sync: false
+      - key: N8N_HOST
+        sync: false
+      - key: WEBHOOK_TUNNEL_URL
+        sync: false
+      - key: N8N_PROTOCOL
+        sync: false
+    healthCheckPath: /health
+    disk:
+      name: n8n-mcp-data
+      mountPath: /app/data
+      sizeGB: 1
+    autoDeploy: true
+    buildCommand: ""
+    startCommand: ""
+    preDeployCommand: ""
+    domains:
+      - name: n8n-mcp
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
