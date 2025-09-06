@@ -19,6 +19,11 @@
     "start:sse": "MCP_MODE=sse node dist/mcp/index.js",
     "http": "npm run build && npm run start:http:fixed",
     "sse": "npm run build && npm run start:sse",
+    "render:build": "npm ci && npm run build",
+    "render:start": "npm run start:http",
+    "render:start:sse": "npm run start:sse",
+    "render:start:compat": "N8N_COMPATIBILITY_MODE=true npm run start:http",
+    "render:deploy": "./scripts/deploy-render.sh",
     "dev": "npm run build && npm run rebuild && npm run validate",
     "dev:http": "MCP_MODE=http nodemon --watch src --ext ts --exec 'npm run build && npm run start:http'",
     "dev:sse": "MCP_MODE=sse nodemon --watch src --ext ts --exec 'npm run build && node dist/mcp/index.js'",
@@ -148,5 +153,15 @@
     "@rollup/rollup-darwin-arm64": "^4.50.0",
     "@rollup/rollup-linux-x64-gnu": "^4.50.0",
     "better-sqlite3": "^11.10.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "render": {
+    "buildCommand": "npm run render:build",
+    "startCommand": "npm run render:start",
+    "healthCheckPath": "/health",
+    "autoDeploy": true
   }
 }

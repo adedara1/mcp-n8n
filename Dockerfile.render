@@ -1,0 +1,55 @@
+# Dockerfile optimisé pour Render.com
+# Déploiement simplifié avec SSE et n8n compatibility support
+
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache \
+    curl \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/cache/apk/*
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig*.json ./
+
+# Install dependencies
+RUN npm ci --only=production --no-audit --no-fund
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Create data directory and copy database if exists
+RUN mkdir -p /app/data
+COPY data/nodes.db /app/data/ 2>/dev/null || echo "Database will be built at runtime"
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs && \
+    chown -R nodejs:nodejs /app
+
+USER nodejs
+
+# Environment variables for Render.com
+ENV NODE_ENV=production
+ENV IS_DOCKER=true
+ENV MCP_SERVER_NAME=n8n-mcp-render
+ENV MCP_SERVER_VERSION=2.10.8
+
+# Expose the port that Render.com will bind to
+EXPOSE $PORT
+
+# Health check for Render.com monitoring
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:$PORT/health || exit 1
+
+# Default command - can be overridden by Render.com service configuration
+CMD ["npm", "run", "start:http"]

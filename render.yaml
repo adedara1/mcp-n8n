@@ -1,0 +1,110 @@
+services:
+  - type: web
+    name: n8n-mcp-server
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:http
+    healthCheckPath: /health
+    autoDeploy: true
+    branch: main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromGroup: shared-port
+      - key: HOST
+        value: 0.0.0.0
+      - key: AUTH_TOKEN
+        generateValue: true
+      - key: LOG_LEVEL
+        value: info
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: MCP_SERVER_NAME
+        value: "n8n-mcp-render"
+      - key: MCP_SERVER_VERSION
+        value: "2.10.8"
+
+  - type: web
+    name: n8n-mcp-sse-server
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:sse
+    healthCheckPath: /health
+    autoDeploy: true
+    branch: main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromGroup: shared-port-sse
+      - key: HOST
+        value: 0.0.0.0
+      - key: AUTH_TOKEN
+        fromGroup: shared-auth-token
+      - key: LOG_LEVEL
+        value: info
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: MCP_SERVER_NAME
+        value: "n8n-mcp-sse-render"
+      - key: MCP_SERVER_VERSION
+        value: "2.10.8"
+
+  - type: web
+    name: n8n-mcp-n8n-compat
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: N8N_COMPATIBILITY_MODE=true npm run start:http
+    healthCheckPath: /health
+    autoDeploy: true
+    branch: main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromGroup: shared-port-compat
+      - key: HOST
+        value: 0.0.0.0
+      - key: AUTH_TOKEN
+        fromGroup: shared-auth-token
+      - key: LOG_LEVEL
+        value: info
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: N8N_COMPATIBILITY_MODE
+        value: "true"
+      - key: MCP_SERVER_NAME
+        value: "n8n-mcp-compat-render"
+      - key: MCP_SERVER_VERSION
+        value: "2.10.8"
+
+envVarGroups:
+  - name: shared-port
+    envVars:
+      - key: PORT
+        value: "3000"
+  
+  - name: shared-port-sse
+    envVars:
+      - key: PORT
+        value: "3001"
+  
+  - name: shared-port-compat
+    envVars:
+      - key: PORT
+        value: "3002"
+  
+  - name: shared-auth-token
+    envVars:
+      - key: AUTH_TOKEN
+        generateValue: true
